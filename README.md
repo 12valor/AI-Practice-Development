@@ -1,6 +1,4 @@
-# 🧮 TUPV Equation Solver & Budget Tracker
-
-A collection of beginner-friendly, AI-guided web applications built using **HTML**, **TailwindCSS**, and **JavaScript**, designed as part of a self-paced learning journey using **ChatGPT** and **Cursor**.
+#A collection of beginner-friendly, AI-guided web applications built using **HTML**, **TailwindCSS**, and **JavaScript**, designed as part of a self-paced learning journey using **ChatGPT** and **Cursor**.
 
 ## 🧑‍💻 Project Overview
 
