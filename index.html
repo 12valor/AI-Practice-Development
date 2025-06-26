@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Roblox Clicker Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🎮 Roblox Clicker</h1>
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-label">💰 Clicks</span>
+                    <span id="clicks" class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">⚡ Clicks/sec</span>
+                    <span id="clicksPerSecond" class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">🔄 Rebirths</span>
+                    <span id="rebirths" class="stat-value">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <div class="click-section">
+                <button id="clickButton" class="click-button">
+                    <span class="click-text">CLICK!</span>
+                    <span class="click-subtitle">💰 Earn Clicks</span>
+                </button>
+                <div class="click-multiplier">
+                    <span>⚡ Click Power: <span id="clickPower">1</span></span>
+                </div>
+            </div>
+
+            <div class="upgrades-section">
+                <h2>🛠️ Upgrades</h2>
+                <div class="upgrades-grid" id="upgradesGrid">
+                    <!-- Upgrades will be generated here -->
+                </div>
+            </div>
+
+            <div class="rebirth-section">
+                <h2>🔄 Rebirth</h2>
+                <div class="rebirth-info">
+                    <p>🌟 Rebirth to gain permanent bonuses! You need <span id="rebirthRequirement">1000</span> clicks to rebirth.</p>
+                    <button id="rebirthButton" class="rebirth-button" disabled>🔄 Rebirth (0x)</button>
+                </div>
+            </div>
+
+            <div class="leaderboard-section">
+                <h2>🏆 Leaderboard</h2>
+                <div class="leaderboard" id="leaderboard">
+                    <!-- Leaderboard will be populated here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
