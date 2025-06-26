@@ -1,0 +1,144 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f6fb;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 700px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    padding: 40px 28px;
+}
+h1 {
+    text-align: center;
+    color: #2d3a4b;
+    margin-bottom: 32px;
+    letter-spacing: 1px;
+}
+section {
+    margin-bottom: 36px;
+    background: #f8fafc;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    padding: 24px 18px 18px 18px;
+}
+section h2 {
+    margin-top: 0;
+    color: #2563eb;
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+}
+form {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+input, select {
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    font-size: 1rem;
+    background: #fff;
+    transition: border 0.2s;
+}
+input:focus, select:focus {
+    border: 1.5px solid #2563eb;
+    outline: none;
+}
+button {
+    background: linear-gradient(90deg, #4f8cff 60%, #2563eb 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 18px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+    transition: background 0.2s, transform 0.1s;
+}
+button:hover {
+    background: linear-gradient(90deg, #2563eb 60%, #4f8cff 100%);
+    transform: translateY(-2px) scale(1.03);
+}
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+#wallets-list li, #monthly-expenses li, #3months-expenses li, #yearly-expenses li {
+    background: #e0e7ef;
+    margin-bottom: 8px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+#wallets-list li {
+    color: #15803d;
+    font-weight: 500;
+}
+#monthly-expenses li, #3months-expenses li, #yearly-expenses li {
+    color: #b91c1c;
+    font-weight: 500;
+}
+#wallets-list button, #monthly-expenses button, #3months-expenses button, #yearly-expenses button {
+    background: #f87171;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 0.95rem;
+    margin-left: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#wallets-list button:hover, #monthly-expenses button:hover, #3months-expenses button:hover, #yearly-expenses button:hover {
+    background: #dc2626;
+}
+#total-money, #summary {
+    font-weight: bold;
+    margin-top: 16px;
+    color: #2563eb;
+    font-size: 1.1rem;
+    background: #e0e7ef;
+    padding: 10px 14px;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+#summary div {
+    margin-bottom: 6px;
+}
+.expenses-group {
+    margin-bottom: 18px;
+}
+.expenses-group h3 {
+    color: #334155;
+    margin-bottom: 8px;
+    font-size: 1.08rem;
+}
+@media (max-width: 600px) {
+    .container {
+        padding: 12px 2px;
+    }
+    section {
+        padding: 12px 4px 8px 4px;
+    }
+    form {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
+    #total-money, #summary {
+        font-size: 1rem;
+        padding: 8px 8px;
+    }
+} 

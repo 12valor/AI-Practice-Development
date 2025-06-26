@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Budget Tracker</h1>
+        <section id="wallets-section">
+            <h2>E-Wallets</h2>
+            <form id="wallet-form">
+                <input type="text" id="wallet-name" placeholder="Wallet Name" required>
+                <input type="number" id="wallet-amount" placeholder="Amount" min="0" required>
+                <button type="submit">Add Wallet</button>
+            </form>
+            <ul id="wallets-list"></ul>
+            <div id="total-money">Total Money: $0</div>
+        </section>
+        <section id="expenses-section">
+            <h2>Expenses</h2>
+            <form id="expense-form">
+                <input type="text" id="expense-name" placeholder="Expense Name" required>
+                <input type="number" id="expense-amount" placeholder="Amount" min="0" required>
+                <button type="submit">Add Expense</button>
+            </form>
+            <div class="expenses-group">
+                <h3>Monthly Expenses</h3>
+                <ul id="monthly-expenses"></ul>
+            </div>
+        </section>
+        <section id="summary-section">
+            <h2>Summary</h2>
+            <div id="summary"></div>
+        </section>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html> 
