@@ -26,9 +26,19 @@ class TUPVDatabase {
                 this.useLocalStorageFallback();
                 return;
             }
-            this.db = new SQL.Database();
-            this.createTables();
-            this.loadExistingData();
+            // Load from localStorage if available
+            const backup = localStorage.getItem('tupvDatabaseBackup');
+            if (backup) {
+                const data = new Uint8Array(JSON.parse(backup));
+                this.db = new SQL.Database(data);
+                console.log('Database loaded from localStorage backup');
+            } else {
+                this.db = new SQL.Database();
+                this.createTables();
+                this.loadExistingData();
+                // Ensure demo account exists
+                this.ensureDemoAccount();
+            }
             this.isInitialized = true;
             console.log('Database initialized successfully');
         } catch (error) {
@@ -43,8 +53,7 @@ class TUPVDatabase {
         this.db.run(`
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                full_name TEXT NOT NULL,
+                username TEXT NOT NULL,
                 password_hash TEXT NOT NULL,
                 isFirstLogin INTEGER DEFAULT 1,
                 tupvID TEXT,
@@ -210,14 +219,15 @@ class TUPVDatabase {
         try {
             const hashedPassword = this.hashPassword(userData.password);
             this.db.run(`
-                INSERT INTO users (username, full_name, password_hash, isFirstLogin)
-                VALUES (?, ?, ?, 1)
-            `, [userData.username, userData.fullName, hashedPassword]);
+                INSERT INTO users (username, password_hash, isFirstLogin)
+                VALUES (?, ?, 1)
+            `, [userData.username, hashedPassword]);
             this.db.run(`
                 INSERT INTO scores (username, points, problems_solved, level)
                 VALUES (?, 0, 0, 1)
             `, [userData.username]);
             this.updateLeaderboardCache(userData.username, 1, 0);
+            this.saveToLocalStorage();
             return true;
         } catch (error) {
             console.error('Error creating user account:', error);
@@ -262,13 +272,10 @@ class TUPVDatabase {
     // Save game state
     saveGameState(studentId, gameState) {
         if (!this.isInitialized) {
-            // Fallback to localStorage
             localStorage.setItem('tupvMathGame', JSON.stringify(gameState));
             return;
         }
-
         try {
-            // Update scores
             this.db.run(`
                 UPDATE scores 
                 SET points = ?, problems_solved = ?, level = ?, 
@@ -281,12 +288,8 @@ class TUPVDatabase {
                 gameState.points,
                 studentId
             ]);
-
-            // Update leaderboard cache
             this.updateLeaderboardCache(studentId, gameState.level, gameState.points);
-
-            // Save to localStorage as backup
-            localStorage.setItem('tupvMathGame', JSON.stringify(gameState));
+            this.saveToLocalStorage();
         } catch (error) {
             console.error('Error saving game state:', error);
         }
@@ -362,6 +365,7 @@ class TUPVDatabase {
                 (username, level, total_points, last_updated)
                 VALUES (?, ?, ?, CURRENT_TIMESTAMP)
             `, [studentId, level, points]);
+            this.saveToLocalStorage();
         } catch (error) {
             console.error('Error updating leaderboard cache:', error);
         }
@@ -506,6 +510,7 @@ class TUPVDatabase {
             this.db.run(`
                 UPDATE users SET tupvID = ?, isFirstLogin = 0 WHERE username = ?
             `, [tupvID, username]);
+            this.saveToLocalStorage();
             return true;
         } catch (error) {
             console.error('Error setting TUPV ID:', error);
@@ -526,15 +531,44 @@ class TUPVDatabase {
             return false;
         }
     }
-}
 
-// Global database instance
-let tupvDatabase = null;
+    // Ensure demo account exists
+    ensureDemoAccount() {
+        try {
+            const result = this.db.exec(`SELECT COUNT(*) FROM users WHERE username = ?`, ['demo']);
+            if (!result.length || !result[0].values[0][0]) {
+                const demoPassword = this.hashPassword('demo123');
+                this.db.run(`
+                    INSERT INTO users (username, full_name, password_hash, isFirstLogin)
+                    VALUES (?, ?, ?, 0)
+                `, ['demo', 'Demo User', demoPassword]);
+                this.db.run(`
+                    INSERT INTO scores (username, points, problems_solved, level)
+                    VALUES (?, 0, 0, 1)
+                `, ['demo']);
+                this.updateLeaderboardCache('demo', 1, 0);
+            }
+        } catch (error) {
+            console.error('Error ensuring demo account:', error);
+        }
+    }
+
+    // Save database to localStorage
+    saveToLocalStorage() {
+        if (!this.db) return;
+        try {
+            const data = this.db.export();
+            localStorage.setItem('tupvDatabaseBackup', JSON.stringify(Array.from(data)));
+        } catch (error) {
+            console.error('Error saving database to localStorage:', error);
+        }
+    }
+}
 
 // Initialize database when SQL.js is ready
 // (remove any previous DOMContentLoaded initialization)
 document.addEventListener('sqljs-ready', () => {
-    tupvDatabase = new TUPVDatabase();
+    new TUPVDatabase();
 });
 
 if (typeof module !== 'undefined' && module.exports) {

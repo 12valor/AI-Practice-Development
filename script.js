@@ -213,9 +213,9 @@ function handleLogin(e) {
     const username = usernameInput.value.trim();
     const password = passwordInput.value.trim();
     
-    // Validate TUPV student ID format
-    if (!isValidTUPVId(username)) {
-        alert('Please enter a valid TUPV Student ID (format: TUPV-XX-XXXX)');
+    // No TUPV ID format validation here
+    if (!username || !password) {
+        alert('Please enter your username and password.');
         return;
     }
     
@@ -225,46 +225,27 @@ function handleLogin(e) {
         if (window.tupvDatabase.authenticateUser(username, password)) {
             loginSuccess(username);
         } else {
-            alert('Invalid Student ID or Password. Please check your credentials or sign up for a new account.');
+            alert('Invalid username or password. Please check your credentials or sign up for a new account.');
         }
     } else {
-        // Fallback to demo account and localStorage
-        if (username === DEMO_ACCOUNT.username && password === DEMO_ACCOUNT.password) {
+        // Fallback to demo account only
+        if (username === 'demo' && password === 'demo123') {
             loginSuccess(username);
         } else {
-            // Check localStorage users
-            const users = JSON.parse(localStorage.getItem('tupvUsers') || '[]');
-            const user = users.find(u => u.studentId === username);
-            if (user && window.tupvDatabase.verifyPassword(password, user.password)) {
-                loginSuccess(username);
-            } else {
-                alert('Invalid Student ID or Password. Please check your credentials or sign up for a new account.');
-            }
+            alert('Invalid username or password. Please check your credentials or sign up for a new account.');
         }
     }
 }
 
-// Validate TUPV Student ID format
-function isValidTUPVId(id) {
-    const tupvPattern = /^TUPV-\d{2}-\d{4}$/;
-    return tupvPattern.test(id);
-}
-
-// Login success
 function loginSuccess(username) {
     gameState.currentUser = username;
     currentUserDisplay.textContent = username;
-    
-    // Hide login, show game (after QR check)
     loginForm.style.display = 'none';
-    // Check for first login and show QR modal if needed
     if (window.tupvDatabase && window.tupvDatabase.isInitialized && window.tupvDatabase.isFirstLogin(username)) {
         showQrModal(username);
     } else {
         showGame();
     }
-    
-    // Save login status
     localStorage.setItem('tupvLoggedIn', 'true');
     localStorage.setItem('tupvCurrentUser', username);
 }
@@ -296,10 +277,6 @@ function loadGameFromDatabase(username) {
 function handleLogout() {
     // Save current game state to database
     saveGameToDatabase();
-    
-    // Clear login status
-    localStorage.removeItem('tupvLoggedIn');
-    localStorage.removeItem('tupvCurrentUser');
     
     // Reset game state
     gameState = {

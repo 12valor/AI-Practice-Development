@@ -24,16 +24,8 @@
                     <input type="text" id="username" placeholder="Choose a username" required>
                 </div>
                 <div class="form-group">
-                    <label for="fullName">Full Name:</label>
-                    <input type="text" id="fullName" placeholder="Enter your full name" required>
-                </div>
-                <div class="form-group">
                     <label for="password">Password:</label>
                     <input type="password" id="password" placeholder="Create a password" required>
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password:</label>
-                    <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
                 </div>
                 <button type="submit" class="login-button" id="signupButton">Create Account</button>
             </form>
@@ -51,11 +43,28 @@
         </div>
     </div>
 
+    <!-- Success Modal -->
+    <div id="successModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; justify-content:center; align-items:center;">
+      <div style="background:#fff; border-radius:10px; padding:40px 30px; text-align:center; box-shadow:0 4px 24px rgba(0,0,0,0.15); min-width:300px;">
+        <h2 style="color:#800020; margin-bottom:20px;">Account created successfully!</h2>
+        <button id="goToLoginBtn" class="login-button" style="width:180px;">Go to Login</button>
+      </div>
+    </div>
+
     <script src="database.js"></script>
     <script>
-        let tupvDatabase = null;
+        // Only declare tupvDatabase once at the top level
+        var tupvDatabase = null;
+        const signupButton = document.getElementById('signupButton');
+        signupButton.disabled = true;
         document.addEventListener('sqljs-ready', () => {
             tupvDatabase = new TUPVDatabase();
+            const checkReady = setInterval(() => {
+                if (tupvDatabase && tupvDatabase.isInitialized === true) {
+                    clearInterval(checkReady);
+                    signupButton.disabled = false;
+                }
+            }, 100);
         });
 
         function showMessage(message, isError = false) {
@@ -77,20 +86,12 @@
         }
         function validateForm() {
             const username = document.getElementById('username').value.trim();
-            const fullName = document.getElementById('fullName').value.trim();
             const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
             if (username.length < 4 || username.length > 20) {
                 showMessage('Username must be 4-20 characters long', true); return false;
             }
-            if (fullName.length < 2) {
-                showMessage('Please enter your full name (at least 2 characters)', true); return false;
-            }
             if (password.length < 6) {
                 showMessage('Password must be at least 6 characters long', true); return false;
-            }
-            if (password !== confirmPassword) {
-                showMessage('Passwords do not match', true); return false;
             }
             return true;
         }
@@ -98,43 +99,37 @@
             e.preventDefault();
             hideMessage();
             if (!validateForm()) return;
+            if (!tupvDatabase || tupvDatabase.isInitialized !== true) {
+                showMessage('Database is not ready. Please wait and try again.', true);
+                console.error('Signup blocked: database not ready');
+                return;
+            }
             const formData = {
                 username: document.getElementById('username').value.trim(),
-                fullName: document.getElementById('fullName').value.trim(),
                 password: document.getElementById('password').value
             };
-            const signupButton = document.getElementById('signupButton');
             signupButton.disabled = true;
             signupButton.textContent = 'Creating Account...';
-            const checkDatabase = setInterval(() => {
-                if (tupvDatabase && tupvDatabase.isInitialized !== undefined) {
-                    clearInterval(checkDatabase);
-                    try {
-                        if (tupvDatabase && tupvDatabase.isInitialized) {
-                            if (tupvDatabase.userExists(formData.username)) {
-                                showMessage('A user with this username already exists. Please login instead.', true);
-                                signupButton.disabled = false;
-                                signupButton.textContent = 'Create Account';
-                                return;
-                            }
-                            const success = tupvDatabase.createUserAccount(formData);
-                            if (success) {
-                                showMessage('Account created successfully! Redirecting to login...');
-                                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
-                            } else {
-                                showMessage('Failed to create account. Please try again.', true);
-                                signupButton.disabled = false;
-                                signupButton.textContent = 'Create Account';
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Signup error:', error);
-                        showMessage('An error occurred during signup. Please try again.', true);
-                        signupButton.disabled = false;
-                        signupButton.textContent = 'Create Account';
-                    }
+            try {
+                // No unique username check
+                const success = tupvDatabase.createUserAccount(formData);
+                if (success) {
+                    // Show modal
+                    document.getElementById('successModal').style.display = 'flex';
+                    document.getElementById('goToLoginBtn').onclick = function() {
+                        window.location.href = 'index.html';
+                    };
+                } else {
+                    showMessage('Failed to create account. Please try again.', true);
+                    signupButton.disabled = false;
+                    signupButton.textContent = 'Create Account';
                 }
-            }, 100);
+            } catch (error) {
+                console.error('Signup error:', error);
+                showMessage('An error occurred during signup. Please try again.', true);
+                signupButton.disabled = false;
+                signupButton.textContent = 'Create Account';
+            }
         });
     </script>
 </body>
